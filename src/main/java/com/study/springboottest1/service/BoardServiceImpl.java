@@ -1,6 +1,6 @@
 package com.study.springboottest1.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.study.springboottest1.domain.Board;
 import com.study.springboottest1.domain.Member;
 import com.study.springboottest1.domain.MemberRole;
@@ -10,7 +10,6 @@ import com.study.springboottest1.repository.MemberRepository;
 import com.study.springboottest1.service.interfaces.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
