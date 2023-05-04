@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head th:replace="~{fragment/header::headerFragment(~{::title})}">
+    <title th:text="Home"></title>
+</head>
+<body >
+<!--<th:block layout:fragment="content">-->
+<!--    <h1>content</h1>-->
+<!--</th:block>-->
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        console.log('Home')
+    </script>
+</th:block>
+<th:block layout:fragment="content">
+    <h1>게시판 리스트</h1>
+<!--    <form action="/board/search" method="get">-->
+<!--        <label for="title">제목</label>-->
+<!--        <input id="title" type="text" name="title" value="${searchVO.title}" /><br>-->
+<!--        <label for="memberName">작성자 이름</label>-->
+<!--        <input id="memberName" type="text" name="memberName" value="${searchVO.memberName}" /><br>-->
+<!--        <label for="memberId">작성자 아이디</label>-->
+<!--        <input id="memberId" type="text" name="memberId" value="${searchVO.memberId}" /><br>-->
+<!--        <button type="submit">검색</button>-->
+<!--    </form>-->
+
+    <table>
+        <thead class="thead-light">
+        <tr class="text-center">
+            <th scope="col">글 번호</th>
+            <th scope="col">글 제목</th>
+            <th scope="col">작성시간</th>
+            <th scope="col">일반회원 조회수</th>
+            <th scope="col">운영자 조회수</th>
+            <th scope="col">작성자</th>
+            <th scope="col">작성자 아이디</th>
+
+        </tr>
+        </thead>
+        <tbody >
+        <tr th:each="p : ${posts}"  th:id="${p.id}" th:onclick="'location.href=\''+ @{/{id}(id=${p.id})} + '\''">
+            <td scope="row" width="10%">
+                <div th:text="${p.id}"></div>
+            </td>
+            <td scope="row" width="20%">
+                <div th:text="${p.title}"></div>
+            </td>
+            <td scope="row" width="20%">
+                <div th:text="${p.getFormattedCreatedAt()}"></div>
+            </td>
+            <td scope="row" width="10%">
+                <div th:text="${p.userViews}"></div>
+            </td>
+            <td scope="row" width="10%">
+                <div th:text="${p.adminViews}"></div>
+            </td>
+            <td scope="row" width="20%">
+                <div th:text="${p.memberName}"></div>
+            </td>
+            <td scope="row" width="20%">
+                <div th:text="${p.memberId}"></div>
+            </td>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</th:block>
+
+</body>
+</html>

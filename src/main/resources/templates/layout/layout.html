@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head th:replace="~{fragment/header :: headerFragment(~{::title})}">
+    <title th:text="경태홈페이지"></title>
+</head>
+<body >
+<div id="wrapper">
+    <nav>
+        <li>
+            <button><a th:href="@{/home}">홈</a></button>
+            <button><a th:href="@{/signup}">회원가입</a></button>
+            <button><a th:href="@{/signin}">로그인</a></button>
+            <button onclick='logout()'>로그아웃</button>
+            <button><a th:href="@{/list}">게시판 홈</a></button>
+            <button><a th:href="@{/new}">글 등록</a></button>
+            <p>로그인 중인 계정: <span th:text="${session.memberId}"></span></p>
+            <p>권한: <span th:text="${session.memberRole}"></span></p>
+        </li>
+    </nav>
+    <div id="content">
+        <th:block layout:fragment="content"></th:block>
+    </div>
+</div>
+<th:block th:replace="fragment/script :: script"></th:block>
+<th:block layout:fragment="script"></th:block>
+
+<script th:inline="javascript">
+</script>
+<script th:inline="javascript">
+    function logout(){
+        if (localStorage.getItem('id') != null) {
+            localStorage.removeItem('id');
+            alert('로그아웃 완료');
+        } else {
+            alert('로그인하세요!');
+        }
+    }
+</script>
+</body>
+</html>
