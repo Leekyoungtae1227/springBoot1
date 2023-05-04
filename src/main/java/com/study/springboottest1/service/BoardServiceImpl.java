@@ -121,7 +121,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponseEntity remove(Long id) {
-
         boardRepository.deleteById(id);
         return new ResponseEntity("success", HttpStatus.OK);
 
