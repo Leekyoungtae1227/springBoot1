@@ -6,7 +6,7 @@
 <head th:replace="~{fragment/header::headerFragment(~{::title})}">
     <title th:text="Home"></title>
 </head>
-<body >
+<body>
 <!--<th:block layout:fragment="content">-->
 <!--    <h1>content</h1>-->
 <!--</th:block>-->
@@ -18,15 +18,16 @@
 </th:block>
 <th:block layout:fragment="content">
     <h1>게시판 리스트</h1>
-<!--    <form action="/board/search" method="get">-->
-<!--        <label for="title">제목</label>-->
-<!--        <input id="title" type="text" name="title" value="${searchVO.title}" /><br>-->
-<!--        <label for="memberName">작성자 이름</label>-->
-<!--        <input id="memberName" type="text" name="memberName" value="${searchVO.memberName}" /><br>-->
-<!--        <label for="memberId">작성자 아이디</label>-->
-<!--        <input id="memberId" type="text" name="memberId" value="${searchVO.memberId}" /><br>-->
-<!--        <button type="submit">검색</button>-->
-<!--    </form>-->
+    <form action="/search" method="get">
+        <label for="title">제목</label>
+        <input id="title" type="text" name="title" th:value="${param.title}"/><br>
+        <label for="memberName">작성자 이름</label>
+        <input id="memberName" type="text" name="memberName" th:value="${param.memberName}"/><br>
+        <label for="memberId">작성자 아이디</label>
+        <input id="memberId" type="text" name="memberId" th:value="${param.memberId}"/><br>
+        <button type="submit">검색</button>
+    </form>
+
 
     <table>
         <thead class="thead-light">
@@ -41,8 +42,8 @@
 
         </tr>
         </thead>
-        <tbody >
-        <tr th:each="p : ${posts}"  th:id="${p.id}" th:onclick="'location.href=\''+ @{/{id}(id=${p.id})} + '\''">
+        <tbody>
+        <tr th:each="p : ${posts}" th:id="${p.id}" th:onclick="'location.href=\''+ @{/{id}(id=${p.id})} + '\''">
             <td scope="row" width="10%">
                 <div th:text="${p.id}"></div>
             </td>

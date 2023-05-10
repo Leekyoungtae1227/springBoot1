@@ -1,9 +1,11 @@
 package com.study.springboottest1.service;
 
 
+import com.querydsl.core.BooleanBuilder;
 import com.study.springboottest1.domain.Board;
 import com.study.springboottest1.domain.Member;
 import com.study.springboottest1.domain.MemberRole;
+import com.study.springboottest1.domain.QBoard;
 import com.study.springboottest1.dto.*;
 import com.study.springboottest1.repository.BoardRepository;
 import com.study.springboottest1.repository.MemberRepository;
@@ -15,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +31,8 @@ public class BoardServiceImpl implements BoardService {
 
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
+
+
 
     @Override
     public ResponseEntity save(PostFormDTO formDTO) {
@@ -150,5 +155,37 @@ public class BoardServiceImpl implements BoardService {
         return new ResponseEntity("success", HttpStatus.OK);
     }
 
+    @Override
+    public List<ListDTO> search(BoardSearchVO searchVO) {
+        ModelMapper modelMapper = new ModelMapper();
 
+        // QuerydslPredicateExecutor를 이용한 검색 기능 구현
+        QBoard qBoard = QBoard.board;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (StringUtils.hasText(searchVO.getTitle())) {
+            builder.and(qBoard.title.containsIgnoreCase(searchVO.getTitle()));
+        }
+
+        if (StringUtils.hasText(searchVO.getMemberName())) {
+            builder.and(qBoard.member.name.containsIgnoreCase(searchVO.getMemberName()));
+        }
+
+        if (StringUtils.hasText(searchVO.getMemberId())) {
+            builder.and(qBoard.member.id.eq(searchVO.getMemberId()));
+        }
+
+        List<Board> boards = (List<Board>) boardRepository.findAll(builder, Sort.by(Sort.Direction.DESC, "id"));
+        List<ListDTO> list = new ArrayList<>();
+
+        for (Board board : boards) {
+            Member member = board.getMember();
+            ListDTO dto = modelMapper.map(board, ListDTO.class);
+            dto.setMemberName(member.getName());
+            dto.setMemberId(member.getId());
+            list.add(dto);
+        }
+
+        return list;
+    }
 }

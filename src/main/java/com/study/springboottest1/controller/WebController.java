@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -87,10 +88,12 @@ public class WebController {
         return "update";
     }
 
-//    @GetMapping("/search")
-//    public String search(@ModelAttribute("searchVO") BoardSearchVO searchVO, Model model) {
-//        List<Board> boards = boardService.searchBoards(searchVO);
-//        model.addAttribute("boards", boards);
-//        return "board/search";
-//    }
+    @GetMapping("/search")
+    public ModelAndView search(BoardSearchVO searchVO) {
+        List<ListDTO> posts = boardService.search(searchVO);
+        ModelAndView mav = new ModelAndView("list");
+        mav.addObject("posts", posts);
+        mav.addObject("searchVO", searchVO);
+        return mav;
+    }
 }

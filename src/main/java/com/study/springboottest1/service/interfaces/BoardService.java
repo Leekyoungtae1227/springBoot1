@@ -15,5 +15,6 @@ public interface BoardService {
     ResponseEntity remove(Long id);
     UpdateDTO getUpdateDTO(Long id);
     ResponseEntity update(Long id, UpdateFormDTO updateFormDTO);
+    List<ListDTO> search(BoardSearchVO searchVO);
 
 }
