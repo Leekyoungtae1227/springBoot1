@@ -12,6 +12,9 @@ import com.study.springboottest1.repository.MemberRepository;
 import com.study.springboottest1.service.interfaces.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +24,10 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,7 +36,6 @@ public class BoardServiceImpl implements BoardService {
 
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
-
 
 
     @Override
@@ -63,22 +67,14 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<ListDTO> getAll(String title) {
-        ModelMapper modelMapper = new ModelMapper();
-        List<Board> posts = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-//        List<Board> posts = boardRepository.findAllByTitleContains(title);
-        List<ListDTO> list = new ArrayList<>();
-
-
-        for (Board post : posts) {
-            Member member = post.getMember();
-
-            ListDTO dto = modelMapper.map(post, ListDTO.class);
-
-            list.add(dto);
+    public Page<Board> getAll(String title, Pageable pageable) {
+        Page<Board> boardPage;
+        if (StringUtils.isEmpty(title)) {
+            boardPage = boardRepository.findAll(pageable);
+        } else {
+            boardPage = boardRepository.findByTitleContaining(title, pageable);
         }
-
-        return list;
+        return boardPage;
     }
 
     @Override
@@ -156,7 +152,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<ListDTO> search(BoardSearchVO searchVO) {
+    public Page<ListDTO> search(BoardSearchVO searchVO, Pageable pageable) {
         ModelMapper modelMapper = new ModelMapper();
 
         // QuerydslPredicateExecutor를 이용한 검색 기능 구현
@@ -175,17 +171,18 @@ public class BoardServiceImpl implements BoardService {
             builder.and(qBoard.member.id.eq(searchVO.getMemberId()));
         }
 
-        List<Board> boards = (List<Board>) boardRepository.findAll(builder, Sort.by(Sort.Direction.DESC, "id"));
-        List<ListDTO> list = new ArrayList<>();
+        Page<Board> boardPage = boardRepository.findAll(builder, pageable);
 
-        for (Board board : boards) {
-            Member member = board.getMember();
-            ListDTO dto = modelMapper.map(board, ListDTO.class);
-            dto.setMemberName(member.getName());
-            dto.setMemberId(member.getId());
-            list.add(dto);
-        }
+        List<ListDTO> list = boardPage.getContent().stream()
+                .map(board -> {
+                    Member member = board.getMember();
+                    ListDTO dto = modelMapper.map(board, ListDTO.class);
+                    dto.setMemberName(member.getName());
+                    dto.setMemberId(member.getId());
+                    return dto;
+                })
+                .collect(Collectors.toList());
 
-        return list;
+        return new PageImpl<>(list, boardPage.getPageable(), boardPage.getTotalElements());
     }
 }

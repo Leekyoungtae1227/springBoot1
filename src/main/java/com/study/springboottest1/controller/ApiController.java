@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -20,8 +22,8 @@ public class ApiController {
 
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginDTO loginDTO) {
-        return memberService.login(loginDTO);
+    public ResponseEntity login(@RequestBody LoginDTO loginDTO, HttpSession httpSession) {
+        return memberService.login(loginDTO, httpSession);
     }
 
     @PostMapping("/signup")

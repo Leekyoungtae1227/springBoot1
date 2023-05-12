@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 @Service
@@ -42,16 +43,18 @@ public class MemberServicelmpl implements MemberService {
     }
 
     @Override
-    public ResponseEntity login(LoginDTO loginDTO) {
+    public ResponseEntity login(LoginDTO loginDTO, HttpSession session) {
 
         Optional<Member> member = memberRepository.findById(loginDTO.getId());
         Member memberEntity = member.orElse(null);
 
-        if (member==null){
+        if (memberEntity == null) {
             return new ResponseEntity("해당 아이디를 가진 회원이 존재하지 않습니다.", HttpStatus.OK);
         }
 
-        if (memberEntity.getPassword().equals(loginDTO.getPassword())){
+        if (memberEntity.getPassword().equals(loginDTO.getPassword())) {
+            session.setAttribute("memberId", memberEntity.getId());
+            session.setAttribute("memberRole", memberEntity.getRole().name());
             return new ResponseEntity("success", HttpStatus.OK);
         } else {
             return new ResponseEntity("비밀번호가 일치하지 않습니다.", HttpStatus.OK);

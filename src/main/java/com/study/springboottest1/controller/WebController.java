@@ -5,6 +5,10 @@ import com.study.springboottest1.dto.*;
 import com.study.springboottest1.service.BoardServiceImpl;
 import com.study.springboottest1.service.interfaces.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -75,11 +80,15 @@ public class WebController {
     }
 
     @GetMapping("/list")
-    public String list(Model model, @RequestParam(required = false) String title) {
-        List<ListDTO> posts = boardService.getAll(title);
-        model.addAttribute("posts", posts);
-        return "list";
+    public String list(Model model, @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, @RequestParam(required = false) String title) {
+        Page<Board> boardPage = boardService.getAll(title, pageable);
+        List<ListDTO> posts = boardPage.getContent().stream().map(ListDTO::from).collect(Collectors.toList());
+        model.addAttribute("boardList", posts);
+        model.addAttribute("currentPage", boardPage.getNumber());
+        model.addAttribute("totalPages", boardPage.getTotalPages());
+        return "List";
     }
+
 
     @GetMapping("/update/{id}")
     public String update(@PathVariable Long id, Model model) {
@@ -89,11 +98,14 @@ public class WebController {
     }
 
     @GetMapping("/search")
-    public ModelAndView search(BoardSearchVO searchVO) {
-        List<ListDTO> posts = boardService.search(searchVO);
+    public ModelAndView search(BoardSearchVO searchVO, @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<ListDTO> boardPage = boardService.search(searchVO, pageable);
+        List<ListDTO> posts = boardPage.getContent();
         ModelAndView mav = new ModelAndView("list");
-        mav.addObject("posts", posts);
+        mav.addObject("boardList", posts);
         mav.addObject("searchVO", searchVO);
+        mav.addObject("currentPage", boardPage.getNumber());
+        mav.addObject("totalPages", boardPage.getTotalPages());
         return mav;
     }
 }

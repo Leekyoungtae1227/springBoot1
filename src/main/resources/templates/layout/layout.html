@@ -15,15 +15,15 @@
             <button onclick='logout()'>로그아웃</button>
             <button><a th:href="@{/list}">게시판 홈</a></button>
             <button><a th:href="@{/new}">글 등록</a></button>
-            <p>로그인 중인 계정: <span th:text="${session.memberId}"></span></p>
-            <p>권한: <span th:text="${session.memberRole}"></span></p>
+            <p>로그인 ID: <span th:text="${memberId}"></span></p>
+            <p>권한: <span th:text="${memberRole}"></span></p>
         </li>
     </nav>
     <div id="content">
         <th:block layout:fragment="content"></th:block>
     </div>
 </div>
-<th:block th:replace="fragment/script :: script"></th:block>
+<th:block th:replace="fragment/script :: script"></th:block>  
 <th:block layout:fragment="script"></th:block>
 
 <script th:inline="javascript">

@@ -43,32 +43,45 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="p : ${posts}" th:id="${p.id}" th:onclick="'location.href=\''+ @{/{id}(id=${p.id})} + '\''">
+        <tr th:each="post : ${boardList}" th:id="${post.id}" th:onclick="'location.href=\''+ @{/{id}(id=${post.id})} + '\''">
             <td scope="row" width="10%">
-                <div th:text="${p.id}"></div>
+                <div th:text="${post.id}"></div>
             </td>
             <td scope="row" width="20%">
-                <div th:text="${p.title}"></div>
+                <div th:text="${post.title}"></div>
             </td>
             <td scope="row" width="20%">
-                <div th:text="${p.getFormattedCreatedAt()}"></div>
-            </td>
-            <td scope="row" width="10%">
-                <div th:text="${p.userViews}"></div>
+                <div th:text="${post.createdAt}"></div>
             </td>
             <td scope="row" width="10%">
-                <div th:text="${p.adminViews}"></div>
+                <div th:text="${post.userViews}"></div>
+            </td>
+            <td scope="row" width="10%">
+                <div th:text="${post.adminViews}"></div>
             </td>
             <td scope="row" width="20%">
-                <div th:text="${p.memberName}"></div>
+                <div th:text="${post.memberName}"></div>
             </td>
             <td scope="row" width="20%">
-                <div th:text="${p.memberId}"></div>
-            </td>
+                <div th:text="${post.memberId}"></div>
             </td>
         </tr>
         </tbody>
     </table>
+    <div class="pagination">
+        <p>Page: <span th:text="${currentPage + 1}"></span> / <span th:text="${totalPages}"></span></p>
+        <p>
+            <a th:if="${currentPage > 0}" th:href="@{${'list'}(page=${currentPage - 1}, size=${pageSize})}" class="btn btn-primary">이전</a>
+
+            <span th:each="page : ${#numbers.sequence(0, totalPages - 1)}">
+                <a th:href="@{${'list'}(page=${page}, size=${pageSize})}"
+                   th:class="${page == currentPage ? 'btn btn-primary active' : 'btn btn-primary'}"
+                   th:text="${page + 1}"></a>
+            </span>
+
+            <a th:if="${currentPage < totalPages - 1}" th:href="@{${'list'}(page=${currentPage + 1}, size=${pageSize})}" class="btn btn-primary">다음</a>
+        </p>
+    </div>
 </th:block>
 
 </body>
